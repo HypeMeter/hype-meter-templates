@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why does the Moon always show the same face?</title>
+<style>
+:root{--bg:#F3EEE3;--card:#fffdf8;--ink:#141414;--muted:#6b6458;--line:#d9d1c2;--accent:#FF3B2F;--moon:#c9c4b8;--earth:#3b7dd8;--orbit:#b9b0a0}
+@media (prefers-color-scheme:dark){:root{--bg:#121212;--card:#1c1c1c;--ink:#f0ece4;--muted:#a59e92;--line:#333;--accent:#ff5a4f;--moon:#9e9a92;--earth:#5a96f0;--orbit:#555}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,"Helvetica Neue",Arial,sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px 16px 24px}
+h1{font-size:1.45rem;line-height:1.2;margin:0 0 6px}.hint{color:var(--muted);margin:0 0 14px;font-size:.95rem}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px}svg{width:100%;height:auto;max-height:44vh;display:block;margin:0 auto}
+.controls{margin:14px 0 4px;display:grid;gap:12px}.row{display:grid;gap:4px}.row label{font-weight:600;font-size:.92rem;display:flex;justify-content:space-between}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.num{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.num b{display:block;font-size:1.25rem}.num span{font-size:.75rem;color:var(--muted)}
+.result{font-size:1.02rem;font-weight:600;min-height:3em}.idea{border-top:2px solid var(--ink);margin-top:14px;padding-top:10px;font-size:1.05rem}
+.note{color:var(--muted);font-size:.8rem;margin-top:8px}
+</style></head><body><main>
+<h1>Why does the Moon always show us the same face?</h1>
+<p class="hint">Try first: drag <b>days</b> and watch the red flag. Then change how fast the Moon spins.</p>
+<div class="stage"><svg viewBox="0 0 400 400" role="img" aria-label="Earth, the Moon's orbit, and a red flag on the Moon">
+  <circle cx="200" cy="200" r="140" fill="none" stroke="var(--orbit)" stroke-dasharray="4 6"/>
+  <circle cx="200" cy="200" r="34" fill="var(--earth)"/><text x="200" y="205" text-anchor="middle" font-size="13" fill="#fff" font-weight="700">Earth</text>
+  <line id="sight" x1="200" y1="200" x2="340" y2="200" stroke="var(--orbit)" stroke-width="1"/>
+  <g id="moon"><circle r="22" fill="var(--moon)"/><path id="near" d="" fill="var(--accent)" opacity=".18"/><g id="flag"><line x1="0" y1="0" x2="0" y2="-34" stroke="var(--ink)" stroke-width="2"/><path d="M0 -34 L16 -29 L0 -24 Z" fill="var(--accent)"/></g></g>
+</svg></div>
+<div class="controls">
+  <div class="row"><label for="days">Days <span id="days-v"></span></label><input id="days" type="range" min="0" max="27.3" step="0.1" value="0"></div>
+  <div class="row"><label for="spin">Moon spins per trip around Earth <span id="spin-v"></span></label><input id="spin" type="range" min="0" max="2" step="0.05" value="1"></div>
+</div>
+<div class="nums"><div class="num"><b id="n-orbit">0°</b><span>around Earth</span></div><div class="num"><b id="n-spin">0°</b><span>Moon has turned</span></div><div class="num"><b id="n-drift">0°</b><span>flag off Earth</span></div></div>
+<p class="result" data-result></p>
+<p class="idea"><b>The idea:</b> the Moon does spin. It turns exactly once per trip around Earth, so the same side keeps facing us.</p>
+<p class="note">A sketch: circular orbit, 27.3-day month, drawn from above. Not to scale.</p>
+</main>
+<script type="application/json" id="demo">[{"sweep":{"days":[0,27.3]},"seconds":5},{"set":{"days":0,"spin":0},"seconds":1},{"sweep":{"days":[0,27.3]},"seconds":5},{"set":{"days":0,"spin":1},"seconds":1.5}]</script>
+<script>
+const $ = id => document.getElementById(id), C = 200, R = 140, MONTH = 27.3;
+function update() {
+  const d = +$('days').value, s = +$('spin').value;
+  const orbit = 2 * Math.PI * d / MONTH;                 // Moon's angle around Earth
+  const spin = s * orbit;                                 // how far the Moon has turned on its own axis
+  const mx = C + R * Math.cos(orbit), my = C + R * Math.sin(orbit);
+  const flagAngle = Math.PI + spin;                       // flag starts pointing at Earth
+  const toEarth = orbit + Math.PI;
+  let drift = ((flagAngle - toEarth) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI); if (drift > Math.PI) drift = 2 * Math.PI - drift;
+  $('moon').setAttribute('transform', `translate(${mx} ${my})`);
+  $('flag').setAttribute('transform', `rotate(${flagAngle * 180 / Math.PI + 90})`);
+  const a = toEarth, x1 = 22 * Math.cos(a - Math.PI / 2), y1 = 22 * Math.sin(a - Math.PI / 2);
+  $('near').setAttribute('d', `M${x1} ${y1} A22 22 0 0 1 ${-x1} ${-y1} Z`);
+  $('sight').setAttribute('x2', mx); $('sight').setAttribute('y2', my);
+  const deg = r => Math.round(r * 180 / Math.PI);
+  $('days-v').textContent = d.toFixed(1); $('spin-v').textContent = s.toFixed(2) + '×';
+  $('n-orbit').textContent = deg(orbit) + '°'; $('n-spin').textContent = deg(spin) + '°'; $('n-drift').textContent = deg(drift) + '°';
+  const perMonth = Math.abs(s - 1);
+  $('n-drift').style.color = drift < 0.2 ? '' : 'var(--accent)';
+  document.querySelector('[data-result]').textContent = perMonth < 0.03
+    ? `Day ${d.toFixed(1)}: the Moon has turned ${deg(spin)}°, exactly as far as it has gone around Earth, so the flag still points at us.`
+    : `Day ${d.toFixed(1)}: spinning ${s.toFixed(2)}× per trip, the flag has drifted ${deg(drift)}° away. Over a month we'd see ${perMonth.toFixed(2)} extra turn${perMonth >= 1.995 ? 's' : ''} of new faces.`;
+}
+['days', 'spin'].forEach(id => { $(id).addEventListener('input', update); $(id).addEventListener('change', update); });
+update();
+</script></body></html>

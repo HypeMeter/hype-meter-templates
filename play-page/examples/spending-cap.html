@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>What does a spending cap do when an API key leaks?</title>
+<style>
+:root{--bg:#F3EEE3;--card:#fffdf8;--ink:#141414;--muted:#6b6458;--line:#d9d1c2;--accent:#FF3B2F;--moon:#c9c4b8;--earth:#3b7dd8;--orbit:#b9b0a0}
+@media (prefers-color-scheme:dark){:root{--bg:#121212;--card:#1c1c1c;--ink:#f0ece4;--muted:#a59e92;--line:#333;--accent:#ff5a4f;--moon:#9e9a92;--earth:#5a96f0;--orbit:#555}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,"Helvetica Neue",Arial,sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px 16px 24px}
+h1{font-size:1.45rem;line-height:1.2;margin:0 0 6px}.hint{color:var(--muted);margin:0 0 14px;font-size:.95rem}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px}svg{width:100%;height:auto;max-height:44vh;display:block;margin:0 auto}
+.controls{margin:14px 0 4px;display:grid;gap:12px}.row{display:grid;gap:4px}.row label{font-weight:600;font-size:.92rem;display:flex;justify-content:space-between}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.num{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.num b{display:block;font-size:1.25rem}.num span{font-size:.75rem;color:var(--muted)}
+.result{font-size:1.02rem;font-weight:600;min-height:3em}.idea{border-top:2px solid var(--ink);margin-top:14px;padding-top:10px;font-size:1.05rem}
+.note{color:var(--muted);font-size:.8rem;margin-top:8px}
+</style></head><body><main>
+<h1>What does a spending cap do when an API key leaks?</h1>
+<p class="hint">Try first: drag <b>hours until you notice</b>. Then turn on a cap.</p>
+<div class="stage"><svg viewBox="0 0 400 300" role="img" aria-label="A leaked key draining money, with an optional cap line">
+  <g transform="translate(40 40)"><circle cx="26" cy="26" r="22" fill="none" stroke="var(--ink)" stroke-width="8"/><rect x="46" y="20" width="70" height="12" fill="var(--ink)"/><rect x="96" y="32" width="10" height="16" fill="var(--ink)"/><rect x="78" y="32" width="10" height="11" fill="var(--ink)"/>
+  <text x="0" y="78" font-size="14" fill="var(--muted)">leaked key</text></g>
+  <rect x="200" y="30" width="150" height="240" rx="10" fill="none" stroke="var(--line)" stroke-width="2"/>
+  <rect id="spent" x="202" y="268" width="146" height="0" rx="8" fill="var(--accent)"/>
+  <line id="capline" x1="190" x2="360" y1="0" y2="0" stroke="var(--ink)" stroke-width="3" stroke-dasharray="8 5"/>
+  <text id="captext" x="365" y="0" font-size="13" fill="var(--ink)" text-anchor="end"></text>
+  <text x="275" y="290" font-size="13" fill="var(--muted)" text-anchor="middle">money taken (scale: $2,000)</text>
+  <path id="arrow" d="M150 70 Q175 70 195 90" fill="none" stroke="var(--accent)" stroke-width="3"/>
+</svg></div>
+<div class="controls">
+  <div class="row"><label for="hours">Hours until you notice <span id="hours-v"></span></label><input id="hours" type="range" min="1" max="72" step="1" value="8"></div>
+  <div class="row"><label for="rate">Attacker spends per hour <span id="rate-v"></span></label><input id="rate" type="range" min="5" max="100" step="5" value="25"></div>
+  <div class="row"><label for="cap">Spending cap on this key</label><select id="cap"><option value="0">No cap</option><option value="10">$10</option><option value="50">$50</option><option value="200">$200</option></select></div>
+</div>
+<div class="nums"><div class="num"><b id="n-nocap">$0</b><span>loss with no cap</span></div><div class="num"><b id="n-loss">$0</b><span>your loss</span></div><div class="num"><b id="n-stop">-</b><span>cap hit after</span></div></div>
+<p class="result" data-result></p>
+<p class="idea"><b>The idea:</b> a cap doesn't stop a leak. It decides the most a leak can ever cost you.</p>
+<p class="note">A sketch with made-up example rates, not real prices.</p>
+</main>
+<script type="application/json" id="demo">[{"set":{"cap":"0","rate":"25"},"sweep":{"hours":[1,72]},"seconds":5},{"set":{"cap":"50","hours":"1"},"seconds":1},{"sweep":{"hours":[1,72]},"seconds":5},{"set":{"hours":"8","cap":"0"},"seconds":1.5}]</script>
+<script>
+const $ = id => document.getElementById(id), SCALE = 2000, TOP = 30, H = 238;
+const money = v => '$' + Math.round(v).toLocaleString('en-US');
+function update() {
+  const h = +$('hours').value, r = +$('rate').value, cap = +$('cap').value;
+  const noCap = h * r, loss = cap ? Math.min(cap, noCap) : noCap, stop = cap ? cap / r : null;
+  const px = v => Math.min(H, H * v / SCALE);
+  $('spent').setAttribute('height', px(loss)); $('spent').setAttribute('y', 268 - px(loss));
+  const capY = 268 - px(cap);
+  $('capline').style.display = $('captext').style.display = cap ? '' : 'none';
+  $('capline').setAttribute('y1', capY); $('capline').setAttribute('y2', capY);
+  $('captext').setAttribute('y', capY - 6); $('captext').textContent = cap ? 'cap ' + money(cap) : '';
+  $('hours-v').textContent = h + ' h'; $('rate-v').textContent = money(r) + '/h';
+  $('n-nocap').textContent = money(noCap); $('n-loss').textContent = money(loss);
+  $('n-stop').textContent = stop === null ? 'no cap' : stop < h ? (stop < 1 ? '<1 h' : stop.toFixed(1) + ' h') : 'not hit';
+  $('n-loss').style.color = loss < noCap ? '' : 'var(--accent)';
+  document.querySelector('[data-result]').textContent = !cap
+    ? `No cap: ${h} hours at ${money(r)} an hour, and the leak costs you ${money(noCap)}.`
+    : loss < noCap
+      ? `With a ${money(cap)} cap the key stops after ${stop < 1 ? 'less than an hour' : stop.toFixed(1) + ' hours'}. You lose ${money(loss)} instead of ${money(noCap)}.`
+      : `With a ${money(cap)} cap and ${h} hours, the leak costs ${money(loss)} and the cap isn't hit yet.`;
+}
+['hours', 'rate', 'cap'].forEach(id => { $(id).addEventListener('input', update); $(id).addEventListener('change', update); });
+update();
+</script></body></html>
