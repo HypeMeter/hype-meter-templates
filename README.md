@@ -4,8 +4,8 @@ AI tools for people who don't code. Tested, not hyped. Every video comes with th
 
 | Video | Folder | What's inside |
 |---|---|---|
-| [Claude Memory for Non-Coders: Make It Remember Your Projects](https://youtu.be/yo9k_pLTEx8) | [lf01-claude-project-manager](lf01-claude-project-manager/) | BRIEF / DECISIONS / WAITING templates + the two sentences |
-| [ChatGPT vs Claude: Use Both to Check Each Other's Work](https://youtu.be/xJNzPWnqzvo) | [lf02-ai-second-opinion](lf02-ai-second-opinion/) | Review prompt, scorecard, three role cards (maker, critic, scout) |
+| [Stop Re-Explaining Your Project to Claude](https://youtu.be/yo9k_pLTEx8) | [lf01-claude-project-manager](lf01-claude-project-manager/) | BRIEF / DECISIONS / WAITING templates + the two sentences |
+| [I Had a Second AI Check My Work 67 Times](https://youtu.be/xJNzPWnqzvo) | [lf02-ai-second-opinion](lf02-ai-second-opinion/) | Review prompt, scorecard, three role cards (maker, critic, scout) |
 | [Find YouTube Outliers With a Free Claude Skill](https://youtu.be/USgKsSRfitQ) | [lf03-claude-skills](lf03-claude-skills/) | Trend Scout, Fresh Critic, Daily Digest (Claude Skills) |
 | X Article: turn any question into a page you can play with | [play-page](play-page/) | Play Page skill: builds one interactive page, checks it, records a vertical clip; 3 example pages |
 
