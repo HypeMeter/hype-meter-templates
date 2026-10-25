@@ -6,4 +6,4 @@
 
 Using the regular Claude app? Create a Project and add the three files as project knowledge. Claude can't edit them there, so at the end of each chat ask for the updated versions and paste them back in.
 
-From the Hype Meter video "Claude Memory for Non-Coders: Make It Remember Your Projects (Free Templates)": https://youtu.be/yo9k_pLTEx8
+From the Hype Meter video "3 Files That Stop Claude Forgetting Your Project (Free Template)": https://youtu.be/yo9k_pLTEx8
