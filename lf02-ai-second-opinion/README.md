@@ -1,6 +1,6 @@
 # Hype Meter · Episode 02 downloads
 
-From the video "ChatGPT vs Claude: Use Both to Check Each Other's Work (Tested 67 Times)": https://youtu.be/xJNzPWnqzvo
+From the video "Should a Second AI Check Your Work? I Tested It 67 Times": https://youtu.be/xJNzPWnqzvo
 
 - `review-prompt.md` — the review prompt used in the email test
 - `scorecard.md` — track which suggestions you used
