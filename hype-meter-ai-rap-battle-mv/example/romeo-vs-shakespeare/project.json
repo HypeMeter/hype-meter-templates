@@ -1,0 +1,85 @@
+{
+ "name": "romeo-vs-shakespeare",
+ "end": 59.4,
+ "song": "song.mp3",
+ "lyrics": "lyrics.md",
+ "beat": [
+  "k-pop boy group performance rap",
+  "hard trap drums",
+  "booming 808 bass",
+  "royal orchestral strings and harpsichord stabs",
+  "clear English diction"
+ ],
+ "characters": {
+  "Romeo": {
+   "color": "#ff3fa4",
+   "sheet": "cast/romeo.png",
+   "look": "Character sheet, front view and three-quarter view, of Romeo as an adult K-pop idol (fictional, not resembling any real person): early 20s, silver-pink styled hair, a Renaissance velvet doublet in black and magenta reworked as an idol stage outfit, a small glass poison-vial pendant. Plain grey background.",
+   "voice": [
+    "solo young male rapper with a high, bright, light tenor voice",
+    "fast cocky idol flow",
+    "playful and sarcastic"
+   ],
+   "avoid": [
+    "deep voice",
+    "old voice"
+   ],
+   "sectionSeconds": 11.5,
+   "performs": "A young K-pop idol rapper raps energetically to the camera with attitude, head bobbing to the beat, expressive hand gestures, blinking naturally."
+  },
+  "Shakespeare": {
+   "color": "#2fd6c8",
+   "sheet": "cast/shakespeare.png",
+   "look": "Character sheet, front view and three-quarter view, of an old Elizabethan playwright in the style of the well-known 1600s portraits of Shakespeare: balding with long side hair, moustache and small beard, white ruff collar, dark doublet, modern studio headphones around his neck. Not resembling any real person or actor. Plain grey background.",
+   "voice": [
+    "solo old man rapper with a very deep, low, gravelly bass voice",
+    "British accent",
+    "slow, heavy, menacing theatrical flow"
+   ],
+   "avoid": [
+    "high voice",
+    "young voice",
+    "fast flow"
+   ],
+   "sectionSeconds": 12.5,
+   "performs": "An old theatrical man raps to the camera with slow, heavy, menacing attitude and smug expressions, small head nods to the beat, blinking naturally."
+  }
+ },
+ "both": {
+  "color": "#FFC531",
+  "voice": [
+   "big unison group gang-vocal chant",
+   "both rappers shouting together",
+   "stomps and claps"
+  ],
+  "sectionSeconds": 12
+ },
+ "frameStyle": "Vertical 9:16 photorealistic cinematic music-video frame, K-pop music-video lighting with magenta and teal accents and haze, everyone is an adult. No text, no letters, no logos, no watermark.",
+ "titleSeconds": 3.6,
+ "cards": [
+  {
+   "t0": 12.0,
+   "t1": 14.3,
+   "text": "WHEREFORE = WHY",
+   "note": "Romeo and Juliet, Act 2, Scene 2"
+  },
+  {
+   "t0": 30.6,
+   "t1": 33.3,
+   "text": "\"lonely\": first recorded use",
+   "note": "Shakespeare, Coriolanus"
+  },
+  {
+   "t0": 43.5,
+   "t1": 45.3,
+   "text": "[Exit, pursued by a bear]",
+   "note": "The Winter's Tale"
+  },
+  {
+   "t0": 57.1,
+   "t1": 59.4,
+   "text": "[Exit, pursued by a bear]",
+   "note": "The Winter's Tale"
+  }
+ ]
+}
