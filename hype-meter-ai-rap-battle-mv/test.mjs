@@ -93,10 +93,10 @@ await t('todo lists sheets, pictures and clips with file names', () => {
   assert.match(md, /cast\/romeo\.png/); assert.match(md, /frames\/s02\.png/); assert.match(md, /audio\/s03\.mp3` \(song 3\.65–6\.55 s\)/); assert.match(md, /MOTION 2 s/);
 });
 const lines = alignLines(ex.sections, exWords, ex.cfg.end);
-await t('overlay: title first, then speaker tag, caption and cards', () => {
+await t('overlay: title first, then captions with the singer\'s name inside, and cards', () => {
   assert.match(overlayHtml(1, { lines, cfg: ex.cfg }), /class=title.*ROMEO.*vs.*SHAKESPEARE/);
   const h = overlayHtml(13, { lines, cfg: ex.cfg });
-  assert.match(h, /class=tag[^>]*>SHAKESPEARE/); assert.match(h, /WHEREFORE = WHY/); assert.match(h, /class=cap>Boy, &quot;wherefore&quot;|class=cap>Boy, "wherefore"/);
+  assert.match(h, /class="cap long" style="border-color:#2fd6c8"><span class=who style="color:#2fd6c8">SHAKESPEARE<\/span>Boy, /); assert.match(h, /WHEREFORE = WHY/);
   assert.match(overlayHtml(50, { lines, cfg: ex.cfg }), /ROMEO × SHAKESPEARE/);
   const b = overlayBreaks({ lines, cfg: ex.cfg }); assert.equal(b[0], 0); assert.equal(b.at(-1), 59.4);
 });

@@ -1,6 +1,6 @@
 ---
 name: hype-meter-ai-rap-battle-mv
-description: Make a vertical AI music video (Shorts, Reels, TikTok) in which two characters rap at each other, from one AI-generated song - lyrics, a song where the two rappers sound different, lip-synced and story shots, lyric captions, fact cards and an edit cut on the song's timing. Use for "rap battle", "diss track video", "AI music video", "make an MV", "two characters rap", "Romeo vs Shakespeare style". Free local tools plan, time, check and cut; the song, pictures and clips come from paid AI services (websites, or optional API scripts with your own keys).
+description: Make a vertical AI music video (Shorts, Reels, TikTok) in which two characters rap at each other, from one AI-generated song: lyrics, a song where the two rappers sound different, lip-synced and story shots, lyric captions, fact cards and an edit cut on the song's timing. Use for "rap battle", "diss track video", "AI music video", "make an MV", "two characters rap", "Romeo vs Shakespeare style". Free local tools plan, time, check and cut; the song, pictures and clips come from paid AI services (websites, or optional API scripts with your own keys).
 ---
 
 # AI Rap Battle MV
@@ -34,7 +34,7 @@ A project folder holds:
 | `characters.<Name>` | One entry per singer; `<Name>` must match the `[Name]` lines in lyrics.md exactly (two words are fine) |
 | ...`.voice` / `.avoid` | Styles for that singer's parts, and styles to keep out |
 | ...`.sectionSeconds` | Length of each of their parts (default: 2.9 s per line) |
-| ...`.color` | Their caption tag color |
+| ...`.color` | Their color: the caption box border and their name inside it |
 | ...`.look`, `.sheet` | Character-sheet prompt, and where the sheet picture goes |
 | ...`.performs` | Lip-sync prompt (how they move while singing) |
 | `both` | Same as a character, for the `[Both]` parts (`voice`, `color`, `sectionSeconds`) |
@@ -93,7 +93,7 @@ Each shot has `id`, `t0`, `t1` (seconds) and `type`, which is `lipsync`, `motion
    - **Motion:** an image-to-video tool (we used Wan 3.0 at 480p) takes the picture plus the `motion` prompt.
    - Save each clip as `clips/<shot>.mp4`, or run `node "$SKILL/api.mjs" clips <project> --yes`.
    - Watch every clip. If the end of a clip has an odd moment, shorten the shot, or add a `still` shot that reuses another picture with `image` (the example does this at s05r).
-11. **Cut.** Run `node "$SKILL/battle.mjs" check <project> --final`, then `node "$SKILL/battle.mjs" cut <project>`. You get `build/<name>.mp4`: 1080x1920, the song mixed to about -14 LUFS, with captions, speaker tags, the title and cards. Watch it with sound, on a phone if you can, before it goes anywhere. Each cut keeps only the finished video in `build/`; the working pieces (about 200 MB) are deleted.
+11. **Cut.** Run `node "$SKILL/battle.mjs" check <project> --final`, then `node "$SKILL/battle.mjs" cut <project>`. You get `build/<name>.mp4`: 1080x1920, the song mixed to about -14 LUFS, with captions (the singer's name inside each caption box, in their color, so it stays right when the picture cuts away; at most two lines, above the area phone apps cover), the title and cards. Watch it with sound, on a phone if you can, before it goes anywhere. Each cut keeps only the finished video in `build/`; the working pieces (about 200 MB) are deleted.
 
 
 ## What it cost us (Romeo vs Shakespeare, Oct 2026)

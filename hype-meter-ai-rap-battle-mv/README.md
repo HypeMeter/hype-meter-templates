@@ -2,7 +2,7 @@
 
 A free Claude skill. You pick two characters with a beef, like Romeo vs Shakespeare. Claude writes the lyrics with you and plans a song where the two rappers sound different. It times every line, lists every picture and clip to make with the cost, and cuts it all into a vertical music video with captions.
 
-Watch the example: [Romeo vs Shakespeare, a K-Pop rap battle (YouTube Short)](https://youtube.com/shorts/sasLcGGJdyA)
+Watch the example: [Romeo vs Shakespeare, a K-Pop rap battle (YouTube Short)](https://youtube.com/shorts/u4WrdMUoFC4)
 
 | | |
 |---|---|

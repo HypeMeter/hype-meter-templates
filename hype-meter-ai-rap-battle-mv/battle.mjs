@@ -278,8 +278,9 @@ export function todoMarkdown(p) {
 
 // ---------- captions and cards ----------
 export const CSS = `html,body{margin:0;width:${W}px;height:${H}px;background:transparent;font-family:"Arial Black","Helvetica Neue",Arial,sans-serif;color:#fff;overflow:hidden}
-.cap{position:absolute;left:60px;right:140px;top:1320px;background:rgba(0,0,0,.5);border-radius:18px;padding:14px 18px;text-align:center;font-size:62px;line-height:1.15;font-weight:900;-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 4px 18px rgba(0,0,0,.85)}
-.tag{position:absolute;left:60px;top:250px;padding:10px 22px;border-radius:12px;color:#111;font-size:40px;letter-spacing:2px}
+.cap{position:absolute;left:60px;right:140px;top:1200px;background:rgba(0,0,0,.55);border:5px solid #fff;border-radius:18px;padding:12px 18px 16px;text-align:center;font-size:54px;line-height:1.15;font-weight:900;-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 4px 18px rgba(0,0,0,.85)}
+.cap.long{font-size:46px}
+.cap .who{display:block;font-size:36px;letter-spacing:3px;-webkit-text-stroke:0;margin-bottom:4px}
 .title{position:absolute;left:0;right:0;top:230px;text-align:center;font-size:104px;line-height:1;text-shadow:0 6px 24px rgba(0,0,0,.9);-webkit-text-stroke:3px #000;paint-order:stroke fill}
 .title span{display:block}.title i{display:block;font-size:64px;color:#FFC531;font-style:normal;margin:10px 0}
 .card{position:absolute;left:60px;right:150px;top:420px;text-align:center;background:rgba(10,10,10,.72);border:4px solid #FFC531;border-radius:18px;padding:18px;font-size:56px;line-height:1.2}
@@ -288,22 +289,23 @@ export const CSS = `html,body{margin:0;width:${W}px;height:${H}px;background:tra
 .ph b{display:block;font-size:90px;color:#FFC531;margin-bottom:30px}`;
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-// What the overlay shows at time t: the speaker tag, the title (first seconds), cards from project.json, and the lyric line being sung.
+// What the overlay shows at time t: the title (first seconds), cards from project.json, and the lyric line being sung.
+// The singer's name sits inside the caption box, in their color, so it stays right even when the picture cuts away to someone else.
+// Long lines get a smaller font so captions stay at two lines, clear of the area phone apps cover (below 80% of the height).
 export function overlayHtml(t, { lines, cfg }) {
   const end = cfg.end, chars = cfg.characters ?? {}, titleUntil = cfg.titleSeconds ?? 3.6;
   const color = who => who === 'Both' ? cfg.both?.color ?? '#FFC531' : chars[who]?.color ?? '#ffffff';
   let h = '';
-  const cur = [...lines].reverse().find(l => t >= l.t0 - 0.05);
   if (t < titleUntil) {
     const names = Object.keys(chars);
     h += `<div class=title>${names.map((n, i) => `${i ? '<i>vs</i>' : ''}<span style="color:${color(n)}">${esc(n.toUpperCase())}</span>`).join('')}</div>`;
-  } else if (cur) {
-    const label = cur.who === 'Both' ? Object.keys(chars).map(n => n.toUpperCase()).join(' × ') : cur.who.toUpperCase();
-    h += `<div class=tag style="background:${color(cur.who)}">${esc(label)}</div>`;
   }
   for (const c of cfg.cards ?? []) if (t >= c.t0 && t < c.t1) h += `<div class=card>${esc(c.text)}${c.note ? `<small>${esc(c.note)}</small>` : ''}</div>`;
   const i = lines.findIndex(l => t >= l.t0 - 0.05 && t < Math.min(lines[lines.indexOf(l) + 1]?.t0 ?? end, l.t1 + 0.6));
-  if (i >= 0) h += `<div class=cap>${esc(lines[i].text)}</div>`;
+  if (i >= 0) {
+    const L = lines[i], label = L.who === 'Both' ? Object.keys(chars).map(n => n.toUpperCase()).join(' × ') : L.who.toUpperCase();
+    h += `<div class="cap${L.text.length > 40 ? ' long' : ''}" style="border-color:${color(L.who)}"><span class=who style="color:${color(L.who)}">${esc(label)}</span>${esc(L.text)}</div>`;
+  }
   return h;
 }
 // The times where the overlay can change; between two of them it stays the same picture.
