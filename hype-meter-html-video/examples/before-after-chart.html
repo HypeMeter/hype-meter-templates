@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where did the hours go?</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #111; color: #eee; font-family: system-ui, sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+  canvas { max-width: 100vw; max-height: calc(100vh - 60px); box-shadow: 0 0 0 1px #333; }
+  #bar { display: flex; gap: 10px; align-items: center; width: min(600px, 94vw); }
+  #bar input { flex: 1; }
+  .render #bar { display: none; }
+</style>
+</head>
+<body>
+<canvas id="video"></canvas>
+<div id="bar"><button id="play">Pause</button><input id="scrub" type="range" min="0" step="0.01" value="0"><span id="time">0.0 s</span></div>
+
+<!-- Pictures: put the files next to this page, list each one here, then draw it with img('id').
+<img hidden id="photo1" src="photo1.jpg">
+-->
+
+<script>
+// ===== 1. Size, speed, length =====
+window.VIDEO = { width: 1920, height: 1080, fps: 30, seconds: 8 };
+
+// ===== 2. Shots: [start, end] in seconds =====
+const SHOTS = {
+  question: [0, 2.2],
+  chart: [2.2, 8],
+};
+const YELLOW = '#ffcc33', MUTED = '#9aa3b2';
+// Sample numbers made up for this demo. Swap in your own, and say where they come from.
+const DATA = [
+  { label: 'Writing the draft', before: 6, after: 2.5 },
+  { label: 'Fixing the wording', before: 4, after: 1 },
+  { label: 'Checking facts', before: 2, after: 2 },
+];
+
+// ===== 3. Draw one picture for time t (seconds) =====
+// The helpers (ctx, text, fade...) are defined further down, so use them only inside functions like this one.
+function renderFrame(t) {
+  const { width: W, height: H } = window.VIDEO;
+  ctx.fillStyle = '#14161c';
+  ctx.fillRect(0, 0, W, H);
+
+  if (inShot(t, SHOTS.question)) {
+    const p = ease(progress(t, -0.5, 0.5));
+    text('Where did the hours go?', W / 2, H / 2 - 40 + (1 - p) * 50, { size: 120, weight: 800, alpha: fade(t, SHOTS.question) });
+    text('hours per week, before and after', W / 2, H / 2 + 90, { size: 48, color: MUTED, alpha: fade(t, SHOTS.question) });
+  }
+
+  if (inShot(t, SHOTS.chart)) {
+    const a = fade(t, SHOTS.chart);
+    text('Hours per week', 160, 130, { size: 64, weight: 800, align: 'left', alpha: a });
+    const max = 6, left = 640, full = W - left - 260, row = 210;
+    DATA.forEach((d, i) => {
+      const y = 300 + i * row;
+      const grow = ease(progress(t, 2.6 + i * 0.35, 3.6 + i * 0.35));
+      const shrink = ease(progress(t, 4.8, 5.8));
+      const value = d.before + (d.after - d.before) * shrink;
+      text(d.label, 160, y + 40, { size: 50, align: 'left', alpha: a * grow, maxWidth: 460 });
+      // Ghost of the "before" bar stays so the change is visible.
+      ctx.globalAlpha = a * grow * 0.35; ctx.fillStyle = MUTED;
+      ctx.fillRect(left, y, full * d.before / max * grow, 80);
+      ctx.globalAlpha = a; ctx.fillStyle = d.after < d.before ? YELLOW : '#f4f4f4';
+      ctx.fillRect(left, y, full * value / max * grow, 80);
+      ctx.globalAlpha = 1;
+      text(value.toFixed(1) + ' h', left + full * value / max * grow + 24, y + 42, { size: 50, weight: 700, align: 'left', alpha: a * grow });
+    });
+    const saved = DATA.reduce((s, d) => s + d.before - d.after, 0);
+    text(`${saved.toFixed(1)} hours back. Checking facts did not get faster.`, W / 2, 940, { size: 56, weight: 700, color: YELLOW, alpha: a * progress(t, 6.0, 6.5) });
+    text('Sample numbers made up for this demo', W - 60, H - 40, { size: 28, color: MUTED, align: 'right', alpha: a });
+  }
+}
+
+// ===== helpers (keep) =====
+const canvas = document.getElementById('video');
+const ctx = canvas.getContext('2d');
+canvas.width = window.VIDEO.width;
+canvas.height = window.VIDEO.height;
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+// 0 before a, 1 after b, in between it moves from 0 to 1.
+const progress = (t, a, b) => clamp((t - a) / (b - a));
+// Slow start, slow end.
+const ease = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const inShot = (t, [a, b]) => t >= a && t < b;
+// Opacity for a shot: fades in around its start and out before its end. Two shots that meet both fade at the cut (a short blink); fade(t, shot, 0, 0) is a hard cut.
+// The first shot is fully visible at t = 0 (that frame is the preview people see), and the last shot does not fade out.
+function fade(t, [a, b], fin = 0.35, fout = 0.35) {
+  const first = a <= 0, last = b >= window.VIDEO.seconds;
+  return Math.min(first ? 1 : progress(t, a - fin / 2, a + fin / 2), last ? 1 : 1 - progress(t, b - fout, b));
+}
+// Same seed, same number, every time. Use instead of Math.random().
+function rand(seed) { const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); }
+const img = id => document.getElementById(id);
+// Draw a picture to fill the box, cropping the edges (like a phone wallpaper).
+function cover(image, x, y, w, h) {
+  const s = Math.max(w / image.naturalWidth, h / image.naturalHeight);
+  const sw = w / s, sh = h / s;
+  ctx.drawImage(image, (image.naturalWidth - sw) / 2, (image.naturalHeight - sh) / 2, sw, sh, x, y, w, h);
+}
+// Text that wraps at maxWidth. y is the middle of the FIRST line; extra lines go downward, so leave room below.
+// Put "\n" in the text to choose where a line breaks (for example, to avoid one word alone on the last line). Returns the height it used.
+// The default width keeps centered text out of the right 12% of a vertical screen, where phone apps put their buttons. On wide videos pass a wider maxWidth.
+function text(str, x, y, { size = 64, weight = 600, color = '#f4f4f4', align = 'center', maxWidth = window.VIDEO.width * 0.76, alpha = 1, lineHeight = 1.18 } = {}) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = 'middle';
+  ctx.font = `${weight} ${size}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+  const lines = [];
+  for (const para of String(str).split('\n')) {
+    let line = '';
+    for (const word of para.split(' ')) {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = word; } else line = test;
+    }
+    lines.push(line);
+  }
+  lines.forEach((l, i) => ctx.fillText(l, x, y + i * size * lineHeight));
+  ctx.restore();
+  return lines.length * size * lineHeight;
+}
+window.renderFrame = renderFrame;
+
+// ===== preview in the browser (not part of the video) =====
+if (location.search.includes('render')) document.body.classList.add('render');
+else window.addEventListener('load', () => {
+  const scrub = document.getElementById('scrub'), play = document.getElementById('play'), time = document.getElementById('time');
+  scrub.max = window.VIDEO.seconds;
+  let playing = true, start = performance.now();
+  play.onclick = () => { playing = !playing; play.textContent = playing ? 'Pause' : 'Play'; start = performance.now() - scrub.value * 1000; };
+  scrub.oninput = () => { start = performance.now() - scrub.value * 1000; draw(+scrub.value); };
+  const draw = t => { renderFrame(t); time.textContent = t.toFixed(1) + ' s'; };
+  (function loop() {
+    if (playing) { const t = ((performance.now() - start) / 1000) % window.VIDEO.seconds; scrub.value = t; draw(t); }
+    requestAnimationFrame(loop);
+  })();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A video is just pictures</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #111; color: #eee; font-family: system-ui, sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+  canvas { max-width: 100vw; max-height: calc(100vh - 60px); box-shadow: 0 0 0 1px #333; }
+  #bar { display: flex; gap: 10px; align-items: center; width: min(600px, 94vw); }
+  #bar input { flex: 1; }
+  .render #bar { display: none; }
+</style>
+</head>
+<body>
+<canvas id="video"></canvas>
+<div id="bar"><button id="play">Pause</button><input id="scrub" type="range" min="0" step="0.01" value="0"><span id="time">0.0 s</span></div>
+
+<!-- Pictures: put the files next to this page, list each one here, then draw it with img('id').
+<img hidden id="photo1" src="photo1.jpg">
+-->
+
+<script>
+// ===== 1. Size, speed, length =====
+window.VIDEO = { width: 1080, height: 1920, fps: 30, seconds: 9 };
+
+// ===== 2. Shots: [start, end] in seconds =====
+const SHOTS = {
+  hook: [0, 3],
+  strip: [3, 6.4],
+  how: [6.4, 9],
+};
+const YELLOW = '#ffcc33', MUTED = '#9aa3b2';
+
+// The ball that bounces through the film strip. Its height comes only from time, so any frame can be drawn on its own.
+const ballY = t => Math.abs(Math.sin(t * Math.PI * 1.25));
+
+// ===== 3. Draw one picture for time t (seconds) =====
+// The helpers (ctx, text, fade...) are defined further down, so use them only inside functions like this one.
+function renderFrame(t) {
+  const { width: W, height: H, fps, seconds } = window.VIDEO;
+  ctx.fillStyle = '#14161c';
+  ctx.fillRect(0, 0, W, H);
+
+  // Always on: frame counter at the top, progress line under it.
+  const frame = Math.round(t * fps) + 1, total = Math.round(seconds * fps);
+  text(`frame ${frame} of ${total}`, W / 2, 150, { size: 40, color: MUTED, weight: 500 });
+  ctx.fillStyle = '#2a2e38'; ctx.fillRect(140, 200, W - 280, 8);
+  ctx.fillStyle = YELLOW; ctx.fillRect(140, 200, (W - 280) * (t / seconds), 8);
+
+  if (inShot(t, SHOTS.hook)) {
+    // All three words are already on screen at t = 0 (the preview); they settle into place over the first second.
+    const words = ['A video', 'is just', 'pictures.'];
+    words.forEach((w, i) => {
+      const p = ease(progress(t, 0, 0.6 + i * 0.25));
+      text(w, W / 2, 640 + i * 190 + (1 - p) * 40 * (i + 1), { size: 150, weight: 800, color: i === 2 ? YELLOW : '#f4f4f4', alpha: fade(t, SHOTS.hook) });
+    });
+  }
+
+  if (inShot(t, SHOTS.strip)) {
+    const a = fade(t, SHOTS.strip), cell = 300, gap = 30, n = 7;
+    const slide = (t - SHOTS.strip[0]) * 260;
+    ctx.save(); ctx.globalAlpha = a;
+    for (let i = 0; i < n; i++) {
+      const x = 40 + i * (cell + gap) - slide, y = 620;
+      ctx.fillStyle = '#20242e'; ctx.fillRect(x, y, cell, cell * 1.3);
+      for (let h = 0; h < 6; h++) { ctx.fillStyle = '#0c0d11'; ctx.fillRect(x + 16 + h * 48, y - 34, 26, 20); ctx.fillRect(x + 16 + h * 48, y + cell * 1.3 + 14, 26, 20); }
+      const ft = i * 0.12;
+      ctx.fillStyle = YELLOW;
+      ctx.beginPath(); ctx.arc(x + cell / 2, y + cell * 1.1 - ballY(ft) * cell * 0.8, 34, 0, Math.PI * 2); ctx.fill();
+      text(String(i + 1), x + 28, y + 34, { size: 30, color: MUTED, align: 'left' });
+    }
+    ctx.restore();
+    text('Each one is drawn\non its own.', W / 2, 1230, { size: 64, weight: 700, alpha: a * progress(t, 3.6, 4.1) });
+    text('Show 30 a second\nand it moves.', W / 2, 1420, { size: 64, weight: 700, color: YELLOW, alpha: a * progress(t, 4.6, 5.1) });
+  }
+
+  if (inShot(t, SHOTS.how)) {
+    const a = fade(t, SHOTS.how);
+    const steps = ['Claude writes a web page', 'that draws any moment you ask for', 'a browser saves every frame', 'ffmpeg joins them into an mp4'];
+    steps.forEach((s, i) => {
+      const p = ease(progress(t, 6.6 + i * 0.45, 7.0 + i * 0.45));
+      ctx.save(); ctx.globalAlpha = a * p;
+      ctx.fillStyle = i === 3 ? YELLOW : '#2a2e38';
+      ctx.beginPath(); ctx.arc(180, 620 + i * 210, 34, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      text(String(i + 1), 180, 622 + i * 210, { size: 38, weight: 800, color: i === 3 ? '#14161c' : '#f4f4f4', alpha: a * p });
+      text(s, 250, 620 + i * 210, { size: 54, weight: 600, align: 'left', maxWidth: 720, alpha: a * p });
+    });
+    // Live demo of the idea: the same ball, drawn from the clock of this very video.
+    ctx.fillStyle = YELLOW; ctx.globalAlpha = a;
+    ctx.beginPath(); ctx.arc(W / 2, 1560 - ballY(t) * 160, 40, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+// ===== helpers (keep) =====
+const canvas = document.getElementById('video');
+const ctx = canvas.getContext('2d');
+canvas.width = window.VIDEO.width;
+canvas.height = window.VIDEO.height;
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+// 0 before a, 1 after b, in between it moves from 0 to 1.
+const progress = (t, a, b) => clamp((t - a) / (b - a));
+// Slow start, slow end.
+const ease = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const inShot = (t, [a, b]) => t >= a && t < b;
+// Opacity for a shot: fades in around its start and out before its end. Two shots that meet both fade at the cut (a short blink); fade(t, shot, 0, 0) is a hard cut.
+// The first shot is fully visible at t = 0 (that frame is the preview people see), and the last shot does not fade out.
+function fade(t, [a, b], fin = 0.35, fout = 0.35) {
+  const first = a <= 0, last = b >= window.VIDEO.seconds;
+  return Math.min(first ? 1 : progress(t, a - fin / 2, a + fin / 2), last ? 1 : 1 - progress(t, b - fout, b));
+}
+// Same seed, same number, every time. Use instead of Math.random().
+function rand(seed) { const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); }
+const img = id => document.getElementById(id);
+// Draw a picture to fill the box, cropping the edges (like a phone wallpaper).
+function cover(image, x, y, w, h) {
+  const s = Math.max(w / image.naturalWidth, h / image.naturalHeight);
+  const sw = w / s, sh = h / s;
+  ctx.drawImage(image, (image.naturalWidth - sw) / 2, (image.naturalHeight - sh) / 2, sw, sh, x, y, w, h);
+}
+// Text that wraps at maxWidth. y is the middle of the FIRST line; extra lines go downward, so leave room below.
+// Put "\n" in the text to choose where a line breaks (for example, to avoid one word alone on the last line). Returns the height it used.
+// The default width keeps centered text out of the right 12% of a vertical screen, where phone apps put their buttons. On wide videos pass a wider maxWidth.
+function text(str, x, y, { size = 64, weight = 600, color = '#f4f4f4', align = 'center', maxWidth = window.VIDEO.width * 0.76, alpha = 1, lineHeight = 1.18 } = {}) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = 'middle';
+  ctx.font = `${weight} ${size}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+  const lines = [];
+  for (const para of String(str).split('\n')) {
+    let line = '';
+    for (const word of para.split(' ')) {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = word; } else line = test;
+    }
+    lines.push(line);
+  }
+  lines.forEach((l, i) => ctx.fillText(l, x, y + i * size * lineHeight));
+  ctx.restore();
+  return lines.length * size * lineHeight;
+}
+window.renderFrame = renderFrame;
+
+// ===== preview in the browser (not part of the video) =====
+if (location.search.includes('render')) document.body.classList.add('render');
+else window.addEventListener('load', () => {
+  const scrub = document.getElementById('scrub'), play = document.getElementById('play'), time = document.getElementById('time');
+  scrub.max = window.VIDEO.seconds;
+  let playing = true, start = performance.now();
+  play.onclick = () => { playing = !playing; play.textContent = playing ? 'Pause' : 'Play'; start = performance.now() - scrub.value * 1000; };
+  scrub.oninput = () => { start = performance.now() - scrub.value * 1000; draw(+scrub.value); };
+  const draw = t => { renderFrame(t); time.textContent = t.toFixed(1) + ' s'; };
+  (function loop() {
+    if (playing) { const t = ((performance.now() - start) / 1000) % window.VIDEO.seconds; scrub.value = t; draw(t); }
+    requestAnimationFrame(loop);
+  })();
+});
+</script>
+</body>
+</html>
