@@ -8,7 +8,9 @@ AI tools for people who don't code. Tested, not hyped. Every video comes with th
 | [Should a Second AI Check Your Work? I Tested It 67 Times](https://youtu.be/xJNzPWnqzvo) | [lf02-ai-second-opinion](lf02-ai-second-opinion/) | Review prompt, scorecard, three role cards (maker, critic, scout) |
 | [Find the Videos That Beat a Channel's Average (Free Claude Skill)](https://youtu.be/USgKsSRfitQ) | [lf03-claude-skills](lf03-claude-skills/) | Trend Scout, Fresh Critic, Daily Digest (Claude Skills) |
 | X Article: turn any question into a page you can play with | [play-page](play-page/) | Play Page skill: builds one interactive page, checks it, records a vertical clip; 3 example pages |
+| [AI Music Video: Romeo vs Shakespeare, a K-Pop Rap Battle](https://youtube.com/shorts/sasLcGGJdyA) | [hype-meter-ai-rap-battle-mv](hype-meter-ai-rap-battle-mv/) | AI Rap Battle MV skill: two characters, one song, a 60-second vertical music video with captions; free planning, timing, preview and edit tools, cost list before you spend |
+| [Can Claude Make Videos? I Tested the Viral GitHub Projects](https://youtu.be/BTq_KgmbDGQ) | [hype-meter-html-video](hype-meter-html-video/) | HTML Video skill: Claude writes a page that draws every frame, checks it, renders an mp4; template, 8 prompts, 2 examples |
 
 Also on the web: https://hypemeterai.vercel.app
 
-Use them however you like. Only Trend Scout needs a key (a free YouTube API key, steps included).
+Use them however you like (MIT license). Only Trend Scout needs a key (a free YouTube API key, steps included).
