@@ -10,6 +10,7 @@ AI tools for people who don't code. Tested, not hyped. Every video comes with th
 | X Article: turn any question into a page you can play with | [play-page](play-page/) | Play Page skill: builds one interactive page, checks it, records a vertical clip; 3 example pages |
 | [AI Music Video: Romeo vs Shakespeare, a K-Pop Rap Battle](https://youtube.com/shorts/u4WrdMUoFC4) | [hype-meter-ai-rap-battle-mv](hype-meter-ai-rap-battle-mv/) | AI Rap Battle MV skill: two characters, one song, a 60-second vertical music video with captions; free planning, timing, preview and edit tools, cost list before you spend |
 | [Can Claude Make Videos? I Tested the Viral GitHub Projects](https://youtu.be/BTq_KgmbDGQ) | [hype-meter-html-video](hype-meter-html-video/) | HTML Video skill: Claude writes a page that draws every frame, checks it, renders an mp4; template, 8 prompts, 2 examples |
+| X Article: make AI-written English sound like you | [hype-meter-plain-english](hype-meter-plain-english/) | Plain English skill: free offline checker for AI-writing patterns, a rewrite that keeps every fact, and a voice card that learns your style; 5 before/after examples |
 
 Also on the web: https://hypemeterai.vercel.app
 
