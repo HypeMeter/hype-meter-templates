@@ -23,13 +23,13 @@
 
 <script>
 // ===== 1. Size, speed, length =====
-window.VIDEO = { width: 1080, height: 1920, fps: 30, seconds: 9 };
+window.VIDEO = { width: 1080, height: 1920, fps: 30, seconds: 11 };
 
 // ===== 2. Shots: [start, end] in seconds =====
 const SHOTS = {
   hook: [0, 3],
   strip: [3, 6.4],
-  how: [6.4, 9],
+  how: [6.4, 11],
 };
 const YELLOW = '#ffcc33', MUTED = '#9aa3b2';
 
@@ -45,9 +45,9 @@ function renderFrame(t) {
 
   // Always on: frame counter at the top, progress line under it.
   const frame = Math.round(t * fps) + 1, total = Math.round(seconds * fps);
-  text(`frame ${frame} of ${total}`, W / 2, 150, { size: 40, color: MUTED, weight: 500 });
-  ctx.fillStyle = '#2a2e38'; ctx.fillRect(140, 200, W - 280, 8);
-  ctx.fillStyle = YELLOW; ctx.fillRect(140, 200, (W - 280) * (t / seconds), 8);
+  text(`frame ${frame} of ${total}`, W / 2, 220, { size: 46, color: MUTED, weight: 500 });
+  ctx.fillStyle = '#2a2e38'; ctx.fillRect(140, 270, W - 280, 8);
+  ctx.fillStyle = YELLOW; ctx.fillRect(140, 270, (W - 280) * (t / seconds), 8);
 
   if (inShot(t, SHOTS.hook)) {
     // All three words are already on screen at t = 0 (the preview); they settle into place over the first second.
@@ -72,7 +72,7 @@ function renderFrame(t) {
       text(String(i + 1), x + 28, y + 34, { size: 30, color: MUTED, align: 'left' });
     }
     ctx.restore();
-    text('Each one is drawn\non its own.', W / 2, 1230, { size: 64, weight: 700, alpha: a * progress(t, 3.6, 4.1) });
+    text('Each one is drawn\non its own.', W / 2, 1230, { size: 64, weight: 700, alpha: a });
     text('Show 30 a second\nand it moves.', W / 2, 1420, { size: 64, weight: 700, color: YELLOW, alpha: a * progress(t, 4.6, 5.1) });
   }
 
@@ -80,7 +80,7 @@ function renderFrame(t) {
     const a = fade(t, SHOTS.how);
     const steps = ['Claude writes a web page', 'that draws any moment you ask for', 'a browser saves every frame', 'ffmpeg joins them into an mp4'];
     steps.forEach((s, i) => {
-      const p = ease(progress(t, 6.6 + i * 0.45, 7.0 + i * 0.45));
+      const p = ease(progress(t, 6.2 + i * 0.45, 6.5 + i * 0.45));
       ctx.save(); ctx.globalAlpha = a * p;
       ctx.fillStyle = i === 3 ? YELLOW : '#2a2e38';
       ctx.beginPath(); ctx.arc(180, 620 + i * 210, 34, 0, Math.PI * 2); ctx.fill();
