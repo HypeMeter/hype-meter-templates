@@ -15,7 +15,7 @@ Each video is a project folder. Start one with `node "$SKILL/battle.mjs" new my-
 SKILL=~/.claude/skills/hype-meter-ai-rap-battle-mv   # wherever this skill is installed
 node "$SKILL/battle.mjs" check my-battle
 ```
-If a script says ffmpeg or puppeteer is not found, run `npm i` in the skill's folder once (README).
+If a script says ffmpeg or puppeteer is not found, run `npm i` in the skill's folder once (README). It takes 2 to 5 minutes and prints nothing until it's done; tell the user that's normal.
 
 A project folder holds:
 - `project.json`: the characters (voice styles, color, look), beat styles, video length, picture style, fact cards.

@@ -30,7 +30,7 @@ You don't need API keys: you can make every paid part on the websites and drop t
 | `test.mjs` | Tests (`node test.mjs`). They never call a paid service |
 | `package.json` | What `npm i` installs: ffmpeg and puppeteer (a browser you never see, for the captions) |
 
-## Install (about 5 minutes)
+## Install (about 10 minutes)
 You need [Node.js](https://nodejs.org) 18 or newer and Claude Code (or the Code tab of the Claude desktop app).
 
 1. Get the folder: on the GitHub page, click Code → Download ZIP, unzip it, and copy the `hype-meter-ai-rap-battle-mv` folder into `~/.claude/skills/` (create that folder if it isn't there).
@@ -39,7 +39,7 @@ You need [Node.js](https://nodejs.org) 18 or newer and Claude Code (or the Code 
    cd ~/.claude/skills/hype-meter-ai-rap-battle-mv
    npm i
    ```
-   The first time takes about 2 minutes and shows nothing until it's done. It also puts a copy of Chrome in `~/.cache/puppeteer`.
+   The first time takes 2 to 5 minutes (it downloads a copy of Chrome), and the screen shows nothing at all until it's done. That's normal; it isn't stuck. The Chrome copy goes in `~/.cache/puppeteer`.
 3. `node test.mjs` should end with `35 passed`.
 4. In Claude, say: "rap battle MV: Cleopatra vs Julius Caesar, she's mad he never texts back."
 
