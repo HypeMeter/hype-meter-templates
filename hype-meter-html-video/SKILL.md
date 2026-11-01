@@ -13,7 +13,7 @@ Work in the folder where the user wants the video, and call the scripts from thi
 SKILL=~/.claude/skills/hype-meter-html-video   # wherever this skill is installed
 node "$SKILL/check.mjs" my-video.html
 ```
-Every file the scripts write (stills, sheets, videos) lands in the folder you run them from. If a script says puppeteer or ffmpeg is not found, the one-time install in README was skipped: run `npm i` in the skill's folder (or set `PUPPETEER_MODULE`, `CHROME_PATH`, `FFMPEG_PATH` as README shows).
+Every file the scripts write (stills, sheets, videos) lands in the folder you run them from. If a script says puppeteer or ffmpeg is not found, the one-time install in README was skipped: run `npm i` in the skill's folder; it takes 2 to 5 minutes and prints nothing until it's done, so tell the user that's normal (or set `PUPPETEER_MODULE`, `CHROME_PATH`, `FFMPEG_PATH` as README shows).
 
 ## Steps
 1. **Agree on the video before drawing.** Ask the user (or decide, if no one is there, write it in `shot-list.md` next to the page, and show it when they are back):

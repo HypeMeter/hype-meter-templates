@@ -4,7 +4,7 @@ A free Claude skill. You describe a short video. Claude writes one web page that
 
 **How it works, in one line:** a video is 30 pictures a second. The page has one function, `renderFrame(t)`, that draws the picture for time `t`. A browser you never see calls it for every frame, and ffmpeg (a free video tool) joins the pictures into a video.
 
-On our laptop, rendering takes about as long as the video or less: the 9-second vertical example took 3 seconds, a 12-second wide chart took 13.
+On our laptop, rendering takes about as long as the video or less: the 11-second vertical example took 5 seconds, a 12-second wide chart took 13.
 
 ## What's in the folder
 | File | What it does |
@@ -18,7 +18,7 @@ On our laptop, rendering takes about as long as the video or less: the 9-second 
 | `test.mjs` | Tests for the checker and renderer (`node test.mjs`) |
 | `package.json` | What `npm i` installs: puppeteer (a browser you never see) and ffmpeg |
 
-## Install (about 5 minutes)
+## Install (about 10 minutes)
 You need [Node.js](https://nodejs.org) (version 18 or newer) and Claude Code or the Code tab of the Claude desktop app.
 
 1. Get the folder: on the GitHub page, click Code → Download ZIP, unzip it, and copy the `hype-meter-html-video` folder into `~/.claude/skills/` (create that folder if it isn't there; `~` is your home folder).
@@ -27,7 +27,7 @@ You need [Node.js](https://nodejs.org) (version 18 or newer) and Claude Code or 
    cd ~/.claude/skills/hype-meter-html-video
    npm i
    ```
-   The first time, it takes about 2 minutes and shows nothing until the end, so it is not stuck (faster if you already have puppeteer's Chrome). It puts about 80 MB in `node_modules` inside the folder, plus a copy of Chrome (about 150 MB) in `~/.cache/puppeteer`. To remove it later, delete the skill folder. `~/.cache/puppeteer` is shared with any other tool that uses puppeteer, so delete it only if nothing else needs it.
+   The first time takes 2 to 5 minutes (it downloads a copy of Chrome), and the screen shows nothing at all until it's done. That's normal; it isn't stuck (faster if you already have puppeteer's Chrome). It puts about 80 MB in `node_modules` inside the folder, plus a copy of Chrome (about 150 MB) in `~/.cache/puppeteer`. To remove it later, delete the skill folder. `~/.cache/puppeteer` is shared with any other tool that uses puppeteer, so delete it only if nothing else needs it.
 
    Already have puppeteer and ffmpeg somewhere? Skip `npm i` and set these in your shell profile (for example `~/.zshrc`) instead. When `PUPPETEER_MODULE` is set, it is used even if `npm i` was run:
    ```
